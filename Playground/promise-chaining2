@@ -1,0 +1,24 @@
+require('../src/db/mongoose')
+const Task = require('../src/models/task')
+
+Task.findByIdAndDelete('63b9714a98b5dd97011bbaf8').then((deleted)=>{
+    console.log(deleted)
+    return Task.countDocuments({status:false}).then((result)=>{
+        console.log(result)
+    })
+}).catch((e)=>{
+    console.log(e)
+})
+
+const deleteandcount= async (delid,description) =>{
+
+    const deleted = await Task.findByIdAndDelete(delid)
+    const describe = await Task.countDocuments({status:description}) 
+    return [deleted,describe]
+}
+deleteandcount('dd97011bbaf8',false).then((results)=>{
+    console.log(results[1])
+    console.log(results[0])
+}).catch((e)=>{
+    console.log(e)
+})
