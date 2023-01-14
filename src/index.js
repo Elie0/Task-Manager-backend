@@ -3,13 +3,23 @@ const dotenv=require('dotenv')
 envPath = path.join(__dirname, '../config/dev.env')
 dotenv.config({ path: envPath})   // hay l dotenv bt 3ouza kermel l sensitive data ma tb3aton 3a github mtl l api key
 const express = require('express')
+const mongoose = require('mongoose')
+const multer = require('multer')
 require('./db/mongoose')
 const UserRoute = require('./routers/user')
 const TaskRoute = require('./routers/tasks')
 const app = express()
 const port = process.env.PORT // || 3000  use npm i env-cmd to get critical info that may lead to security breaches like api key
-const multer = require('multer')
-console.log(process.env.PORT);
+
+const connectDB = async () => {
+    try {
+      const conn = await mongoose.connect(process.env.MongooseConnectionUrl);
+      console.log(`MongoDB Connected: ${conn.connection.host}`);
+    } catch (error) {
+      console.log(error);
+      process.exit(1);
+    }
+  }
 
 app.use(express.json())// automatically parse incoming json to object to use it directly with req.body 
 
@@ -17,9 +27,14 @@ app.use(UserRoute)
 
 app.use(TaskRoute)
 
-app.listen(port,()=>{
+// app.listen(port,()=>{
+//     console.log('Server is up on port '+ port)
+// })
+
+connectDB().then(()=>app.listen(port,()=>{
     console.log('Server is up on port '+ port)
-})
+}))
+
 
 
 
